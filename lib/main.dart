@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart'; // Provider import
+import 'models/task.dart';
+import 'providers/task_provider.dart'; // TaskProvider import
 import 'splash_screen.dart';
 
-void main() {
-  runApp(const SmartTaskManager());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox<Task>('tasks');
+
+  runApp(
+    // App ko MultiProvider mein wrap kiya taake Provider har jagah mile
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => TaskProvider())],
+      child: const SmartTaskManager(),
+    ),
+  );
 }
 
 class SmartTaskManager extends StatelessWidget {
@@ -13,11 +29,8 @@ class SmartTaskManager extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Smart Task Manager',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
-      ),
-      home: SplashScreen(),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+      home: const SplashScreen(),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'screens/home_screen.dart'; // 1. Ye import zaroori hai
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,11 +13,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Navigate to Home after 3 seconds
     Timer(const Duration(seconds: 3), () {
+      // 2. Yahan SmartTaskManager hata kar HomeScreen lagaya hai
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SmartTaskManager()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     });
   }
@@ -30,11 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 180,
-              height: 180,
-            ),
+            Image.asset('assets/images/logo.png', width: 180, height: 180),
             const SizedBox(height: 20),
             const Text(
               "Smart Task Manager",
