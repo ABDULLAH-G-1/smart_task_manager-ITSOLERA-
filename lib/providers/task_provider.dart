@@ -51,7 +51,7 @@ class TaskProvider extends ChangeNotifier {
     task.title = newTitle;
     task.description = newDesc;
     task.priority = newPriority;
-    await task.save(); 
+    await task.save();
     notifyListeners();
   }
 

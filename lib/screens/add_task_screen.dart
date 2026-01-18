@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/task.dart'; // Model import
 import '../providers/task_provider.dart';
 
 class AddTaskScreen extends StatefulWidget {
-  const AddTaskScreen({super.key});
+  final Task?
+  taskToEdit; //if it is not null :means we are in editing mode
+
+  const AddTaskScreen({super.key, this.taskToEdit});
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  // Form  key
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController _titleController;
+  late TextEditingController _descController;
+  late String _selectedPriority;
 
-  // Input Controllers
-  final _titleController = TextEditingController();
-  final _descController = TextEditingController();
-  String _selectedPriority = 'Low'; // Default value
+  @override
+  void initState() {
+    super.initState();
+    //if edit mode pick the previous data other wise empty
+    _titleController = TextEditingController(
+      text: widget.taskToEdit?.title ?? '',
+    );
+    _descController = TextEditingController(
+      text: widget.taskToEdit?.description ?? '',
+    );
+    _selectedPriority = widget.taskToEdit?.priority ?? 'Low';
+  }
 
   @override
   void dispose() {
@@ -25,28 +39,43 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     super.dispose();
   }
 
-  // Save Function
   void _saveTask() {
     if (_formKey.currentState!.validate()) {
-      context.read<TaskProvider>().addTask(
-        _titleController.text.trim(),
-        _descController.text.trim(),
-        _selectedPriority,
-      );
+      final title = _titleController.text.trim();
+      final desc = _descController.text.trim();
+
+      if (widget.taskToEdit != null) {
+        // --- EDIT MODE ---
+        //In Provider call update function
+        context.read<TaskProvider>().updateTask(
+          widget.taskToEdit!,
+          title,
+          desc,
+          _selectedPriority,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Task Updated Successfully')),
+        );
+      } else {
+        // --- ADD MODE ---
+        context.read<TaskProvider>().addTask(title, desc, _selectedPriority);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Task Added Successfully')),
+        );
+      }
 
       Navigator.pop(context);
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Task Added Successfully')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Change the Title  based on mode
+    final isEdit = widget.taskToEdit != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Task"),
+        title: Text(isEdit ? "Edit Task" : "Add New Task"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -58,7 +87,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. Title Input
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
@@ -68,16 +96,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                   prefixIcon: const Icon(Icons.task_alt),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Please enter a title"; // Validation Error
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? "Please enter a title"
+                    : null,
               ),
               const SizedBox(height: 16),
-
-              // 2. Priority Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedPriority,
                 decoration: InputDecoration(
@@ -87,21 +110,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                   prefixIcon: const Icon(Icons.flag_outlined),
                 ),
-                items: ['High', 'Medium', 'Low'].map((priority) {
-                  return DropdownMenuItem(
-                    value: priority,
-                    child: Text(priority),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPriority = value!;
-                  });
-                },
+                items: ['High', 'Medium', 'Low']
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .toList(),
+                onChanged: (val) => setState(() => _selectedPriority = val!),
               ),
               const SizedBox(height: 16),
-
-              // 3. Description Input (Big Box)
               TextFormField(
                 controller: _descController,
                 maxLines: 5,
@@ -118,19 +132,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // 4. Save Button
               ElevatedButton(
                 onPressed: _saveTask,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: isEdit
+                      ? Colors.orange
+                      : Colors.blue, // In Edit  Orange color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  "Save Task",
+                child: Text(
+                  isEdit ? "Update Task" : "Save Task",
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
