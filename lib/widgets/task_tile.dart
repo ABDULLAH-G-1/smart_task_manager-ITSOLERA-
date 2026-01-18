@@ -47,13 +47,13 @@ class TaskTile extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
                   task.description,
-                  maxLines: 2, // 2 lines tak dikhaye ga, baqi ... ho jayega
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ),
             const SizedBox(height: 8),
-            // Priority Badge (Bonus Feature)
+            // Priority Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(

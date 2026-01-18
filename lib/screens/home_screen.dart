@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_tile.dart';
+import 'add_task_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,27 +22,24 @@ class HomeScreen extends StatelessWidget {
         foregroundColor: Colors.black, // Text color black
       ),
 
-      // Floating Action Button (Add Task ke liye)
+      // Floating Action Button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Open Add Task Screen (Next Milestone)
-          // Filhal testing ke liye dummy task add kar rahe hain
-          context.read<TaskProvider>().addTask(
-            "Test Task ${DateTime.now().second}",
-            "This is a description to check long text handling functionality.",
-            "High",
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddTaskScreen()),
           );
         },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
 
-      // Body: Consumer Data Sunega
+      // Body:
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
           final tasks = provider.tasks;
 
-          // 1. Empty State (Agar koi task nahi hai)
+          // 1. Empty State
           if (tasks.isEmpty) {
             return Center(
               child: Column(
@@ -62,10 +60,10 @@ class HomeScreen extends StatelessWidget {
             );
           }
 
-          // 2. List View (Agar tasks hain)
+          // 2. List View
           return ListView.builder(
             itemCount: tasks.length,
-            padding: const EdgeInsets.only(bottom: 80), // FAB ke liye jagah
+            padding: const EdgeInsets.only(bottom: 80),
             itemBuilder: (context, index) {
               final task = tasks[index];
               return TaskTile(

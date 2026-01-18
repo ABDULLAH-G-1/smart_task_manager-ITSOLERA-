@@ -13,7 +13,6 @@ void main() async {
   await Hive.openBox<Task>('tasks');
 
   runApp(
-    // App ko MultiProvider mein wrap kiya taake Provider har jagah mile
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => TaskProvider())],
       child: const SmartTaskManager(),
