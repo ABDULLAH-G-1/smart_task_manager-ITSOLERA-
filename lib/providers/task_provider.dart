@@ -46,6 +46,14 @@ class TaskProvider extends ChangeNotifier {
     await task.delete(); // Hive built-in delete function
     notifyListeners();
   }
+  // 5. Update Task Details (Edit)
+  Future<void> updateTask(Task task, String newTitle, String newDesc, String newPriority) async {
+    task.title = newTitle;
+    task.description = newDesc;
+    task.priority = newPriority;
+    await task.save(); 
+    notifyListeners();
+  }
 
   // 4. Update Status (For Tick mark )
   Future<void> toggleTaskStatus(Task task) async {
