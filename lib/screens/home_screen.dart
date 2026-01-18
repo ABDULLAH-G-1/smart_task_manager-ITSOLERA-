@@ -12,14 +12,26 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100], // Light background for contrast
       appBar: AppBar(
-        title: const Text(
-          "My Tasks",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black, // Text color black
+        foregroundColor: Colors.black,
+        title: Card( 
+          elevation: 0,
+          color: Colors.grey[100],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: TextField(
+            onChanged: (value) {
+              // call provider for search
+              context.read<TaskProvider>().searchTasks(value);
+            },
+            decoration: const InputDecoration(
+              hintText: "Search tasks...",
+              prefixIcon: Icon(Icons.search, color: Colors.grey),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+          ),
+        ),
       ),
 
       // Floating Action Button

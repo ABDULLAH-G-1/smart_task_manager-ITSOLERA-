@@ -4,6 +4,7 @@ import '../models/task.dart';
 
 class TaskProvider extends ChangeNotifier {
   Box<Task>? _taskBox;
+  String _searchQuery = '';
 
   TaskProvider() {
     _init();
@@ -22,11 +23,27 @@ class TaskProvider extends ChangeNotifier {
   // 1. Get All Tasks
   List<Task> get tasks {
     if (_taskBox == null) return [];
-    // Tasks List (Newest first)
-    final taskList = _taskBox!.values.toList();
-    taskList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return taskList;
+
+    // List the all tasks
+    final allTasks = _taskBox!.values.toList();
+
+    // Sort tha tasks (Newest First)
+    allTasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    // if search bar is empty :show all the tasks
+    if (_searchQuery.isEmpty) {
+      return allTasks;
+    } else {
+      //other wise show the searched tasks
+      return allTasks.where((task) {
+        final query = _searchQuery.toLowerCase();
+        return task.title.toLowerCase().contains(query) ||
+            task.description.toLowerCase().contains(query);
+      }).toList();
+    }
   }
+
+
 
   // 2. Add Task
   Future<void> addTask(String title, String desc, String priority) async {
@@ -59,6 +76,11 @@ class TaskProvider extends ChangeNotifier {
   Future<void> toggleTaskStatus(Task task) async {
     task.isCompleted = !task.isCompleted;
     await task.save(); // Save changes
+    notifyListeners();
+  }
+  // 5. Search Function
+  void searchTasks(String query) {
+    _searchQuery = query;
     notifyListeners();
   }
 }
