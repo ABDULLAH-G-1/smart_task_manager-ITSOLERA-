@@ -64,16 +64,28 @@ class HomeScreen extends StatelessWidget {
           return ListView.builder(
             itemCount: tasks.length,
             padding: const EdgeInsets.only(bottom: 80),
+            // ListView.builder
             itemBuilder: (context, index) {
               final task = tasks[index];
-              return TaskTile(
-                task: task,
-                onStatusChanged: () {
-                  provider.toggleTaskStatus(task);
+              return GestureDetector(
+                onTap: () {
+                  // open screen in edit mode
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTaskScreen(taskToEdit: task),
+                    ),
+                  );
                 },
-                onDelete: () {
-                  provider.deleteTask(task);
-                },
+                child: TaskTile(
+                  task: task,
+                  onStatusChanged: () {
+                    provider.toggleTaskStatus(task);
+                  },
+                  onDelete: () {
+                    provider.deleteTask(task);
+                  },
+                ),
               );
             },
           );
